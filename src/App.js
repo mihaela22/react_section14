@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 import MoviesList from "./components/MoviesList";
+import AddMovie from "./components/AddMovie";
 import "./App.css";
 
 function App() {
@@ -8,11 +9,13 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  async function fetchMoviesHandler() {
+  const fetchMoviesHandler = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch("https://swapi.dev/api/films");
+      const response = await fetch(
+        "https://swapi.https://react-http-dfee6-default-rtdb.europe-west1.firebasedatabase.app/movies.json"
+      );
 
       if (!response.ok) {
         throw new Error("Something went wrong!");
@@ -34,6 +37,15 @@ function App() {
     }
 
     setIsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    // function is called first time the component is loaded
+    fetchMoviesHandler();
+  }, [fetchMoviesHandler]);
+
+  function addMovieHandler(movie) {
+    console.log(movie);
   }
 
   let content = <p>Found no movies</p>;
@@ -52,6 +64,9 @@ function App() {
 
   return (
     <React.Fragment>
+      <section>
+        <AddMovie onAddMovie={addMovieHandler} />
+      </section>
       <section>
         <button onClick={fetchMoviesHandler}>Fetch Movies</button>
       </section>
